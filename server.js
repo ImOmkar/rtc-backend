@@ -172,6 +172,7 @@ console.log("users in room: ", usersInRoom)
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
+  console.log("users in room: ", usersInRoom)
 
   socket.on("join-room", ({ roomName, userName }) => {
     socket.join(roomName);
