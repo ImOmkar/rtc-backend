@@ -168,6 +168,8 @@ const io = socketIo(server, {
 
 const usersInRoom = {}; // Track users in each room
 
+console.log("users in room: ", usersInRoom)
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
