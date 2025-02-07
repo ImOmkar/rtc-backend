@@ -9,7 +9,7 @@ app.use(cors({ origin: "*" }));
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "https://ksj9ppbn-3000.inc1.devtunnels.ms",  // Allow all origins (for development)
+    origin: "*",  // Allow all origins (for development)
   },
 });
 
