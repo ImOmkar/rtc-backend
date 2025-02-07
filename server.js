@@ -33,6 +33,21 @@ io.on("connection", (socket) => {
     } else {
       socket.emit("error", "Room does not exist!");
     }
+
+    const otherUsers = rooms.get(roomID).filter(id => id !== socket.id);
+    socket.emit('all users', otherUsers);
+
+    if (roomMessages[roomID]) {
+      socket.emit('chatHistory', roomMessages[roomID]);
+    }
+  });
+
+  socket.on('sending signal', (payload) => {
+    io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+  });
+
+  socket.on('returning signal', (payload) => {
+    io.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });
   });
 
   socket.on("offer", ({ roomID, offer }) => {
@@ -47,8 +62,17 @@ io.on("connection", (socket) => {
     socket.to(roomID).emit("ice-candidate", { candidate });
   });
 
-  socket.on("disconnect", () => {
-    console.log("❌ User disconnected");
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+    rooms.forEach((value, key) => {
+      if (value.includes(socket.id)) {
+        rooms.set(key, value.filter(id => id !== socket.id));
+        if (rooms.get(key).length === 0) {
+          rooms.delete(key);
+        }
+      }
+    });
+    socket.broadcast.emit('user left', socket.id);
   });
 });
 
